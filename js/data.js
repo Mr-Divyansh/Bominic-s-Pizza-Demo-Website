@@ -25,14 +25,14 @@ const restaurants = [
 	},
 	{
 		id: "rest-003",
-		name: "Crust & Craft",
-		image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=900&q=80",
-		cuisine: "Italian Pizza",
-		rating: 4.6,
+		name: "Bominic's Pizza",
+		image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80",
+		cuisine: "Pizza",
+		rating: 4.8,
 		priceRange: "$$",
-		deliveryTime: "30-40 min",
-		description: "Hand-stretched sourdough pizzas baked hot with seasonal ingredients and bold sauces.",
-		location: "HSR Layout",
+		deliveryTime: "25-35 min",
+		description: "Freshly baked pizzas, sides and beverages from Shop 7, HRTC Complex, Palampur. Demo menu with sample prices.",
+		location: "Shop 7, HRTC Complex, Palampur",
 		featured: true
 	},
 	{
@@ -172,6 +172,30 @@ const foodItems = [
 	},
 	{
 		id: "food-025", restaurantId: "rest-008", name: "Classic Lemon Tart", image: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=700&q=80", description: "Buttery pastry shell with bright lemon curd and toasted meringue.", price: 189, category: "Desserts", dietaryType: "Veg", ingredients: ["Flour", "Lemon", "Eggs", "Butter", "Sugar"], calories: 350, rating: 4.6, featured: false
+	},
+	{
+		id: "food-026", restaurantId: "rest-003", name: "Classic Cheese Burst Pizza", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80", description: "Loaded mozzarella, tangy tomato sauce and herbs on a soft hand-tossed base. Demo price.", price: 299, category: "Pizza", dietaryType: "Veg", ingredients: ["Pizza base", "Tomato sauce", "Mozzarella", "Oregano", "Basil"], calories: 720, rating: 4.8, featured: true
+	},
+	{
+		id: "food-027", restaurantId: "rest-003", name: "Veggie Supreme Pizza", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=700&q=80", description: "Capsicum, onion, sweet corn, mushroom and extra cheese. Demo price.", price: 329, category: "Pizza", dietaryType: "Veg", ingredients: ["Capsicum", "Onion", "Sweet corn", "Mushroom", "Mozzarella"], calories: 690, rating: 4.7, featured: true
+	},
+	{
+		id: "food-028", restaurantId: "rest-003", name: "Paneer Tikka Pizza", image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=700&q=80", description: "Smoky paneer tikka, onion, capsicum and spicy tomato base. Demo price.", price: 349, category: "Pizza", dietaryType: "Veg", ingredients: ["Paneer", "Capsicum", "Onion", "Tomato sauce", "Tandoori spices"], calories: 740, rating: 4.9, featured: true
+	},
+	{
+		id: "food-029", restaurantId: "rest-003", name: "Chicken Pepperoni Pizza", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=700&q=80", description: "Chicken pepperoni, mozzarella and Italian herbs on a crisp base. Demo price.", price: 399, category: "Pizza", dietaryType: "Non-Veg", ingredients: ["Chicken pepperoni", "Mozzarella", "Tomato sauce", "Oregano"], calories: 810, rating: 4.8, featured: true
+	},
+	{
+		id: "food-030", restaurantId: "rest-003", name: "Corn & Cheese Pizza", image: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=700&q=80", description: "Golden sweet corn with double cheese and a buttery crust. Demo price.", price: 279, category: "Pizza", dietaryType: "Veg", ingredients: ["Sweet corn", "Mozzarella", "Pizza base", "Butter", "Herbs"], calories: 670, rating: 4.6, featured: false
+	},
+	{
+		id: "food-031", restaurantId: "rest-003", name: "Farmhouse Veg Pizza", image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=700&q=80", description: "Garden veggies, mushrooms and mozzarella with extra oregano. Demo price.", price: 339, category: "Pizza", dietaryType: "Veg", ingredients: ["Capsicum", "Mushroom", "Onion", "Tomato", "Mozzarella"], calories: 700, rating: 4.7, featured: false
+	},
+	{
+		id: "food-032", restaurantId: "rest-003", name: "Garlic Breadsticks", image: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?auto=format&fit=crop&w=700&q=80", description: "Warm garlic breadsticks with cheesy dip. Perfect pizza partner. Demo price.", price: 149, category: "Starters", dietaryType: "Veg", ingredients: ["Flour", "Garlic", "Butter", "Cheese dip", "Herbs"], calories: 380, rating: 4.6, featured: false
+	},
+	{
+		id: "food-033", restaurantId: "rest-003", name: "Choco Lava Cake", image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80", description: "Warm chocolate cake with a gooey centre. Demo price.", price: 129, category: "Desserts", dietaryType: "Veg", ingredients: ["Chocolate", "Flour", "Butter", "Sugar"], calories: 420, rating: 4.7, featured: false
 	}
 ];
 
@@ -198,7 +222,7 @@ const foodCategories = [
 
 const specialOffers = [
 	{ id: "offer-001", code: "WELCOME100", title: "Welcome treat", description: "Get Rs. 100 off on your first order above Rs. 499.", discountType: "fixed", discountValue: 100, minimumOrder: 499, maximumDiscount: 100, expiresOn: "2026-12-31", active: true },
-	{ id: "offer-002", code: "FRESH20", title: "FreshBite favourite", description: "Save 20% on orders above Rs. 699, up to Rs. 150.", discountType: "percentage", discountValue: 20, minimumOrder: 699, maximumDiscount: 150, expiresOn: "2026-10-31", active: true },
+	{ id: "offer-002", code: "BOMINIC20", title: "Bominic's favourite", description: "Save 20% on orders above Rs. 699, up to Rs. 150. Demo offer.", discountType: "percentage", discountValue: 20, minimumOrder: 699, maximumDiscount: 150, expiresOn: "2026-10-31", active: true },
 	{ id: "offer-003", code: "VEGGIE50", title: "Veggie celebration", description: "Get Rs. 50 off when your cart includes two vegetarian dishes.", discountType: "fixed", discountValue: 50, minimumOrder: 399, maximumDiscount: 50, expiresOn: "2026-09-30", active: true },
 	{ id: "offer-004", code: "LUNCH15", title: "Lunch hour savings", description: "Enjoy 15% off between 12:00 PM and 3:00 PM.", discountType: "percentage", discountValue: 15, minimumOrder: 299, maximumDiscount: 100, expiresOn: "2026-09-15", active: true }
 ];

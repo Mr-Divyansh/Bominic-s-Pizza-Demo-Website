@@ -35,11 +35,11 @@ function getSavedOrders() {
 }
 
 function generateOrderId() {
-	return `FB-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+	return `BP-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 }
 
 function renderConfirmation(pageMount, order) {
-	pageMount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--success"><div><span class="eyebrow">Order confirmed</span><h1>Thanks, ${escapeHtml(order.delivery.fullName)}!</h1><p>Your order <strong>${order.id}</strong> has been placed and the kitchen is getting started.</p><p>Estimated delivery: <strong>${escapeHtml(order.deliveryTime.label)}</strong></p><div class="checkout-confirmation__actions"><button class="button" type="button" data-track-order>Track your order</button><a class="button button--secondary" href="account.html">View order history</a><a class="button button--ghost" href="restaurants.html">Order something else</a></div><div class="alert alert--info" data-tracking-message hidden><strong>Order received</strong><p>Your order is being prepared. Tracking updates will appear here as your order progresses.</p></div></div></div></div></section>`;
+	pageMount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--success"><div><span class="eyebrow">Order confirmed</span><h1>Thanks, ${escapeHtml(order.delivery.fullName)}!</h1><p>Your order <strong>${order.id}</strong> has been placed and the kitchen is getting started.</p><p>Estimated delivery: <strong>${escapeHtml(order.deliveryTime.label)}</strong></p><div class="checkout-confirmation__actions"><button class="button" type="button" data-track-order>Track your order</button><a class="button button--secondary" href="account.html">View order history</a><a class="button button--ghost" href="menu.html?restaurant=rest-003">Order more pizzas</a></div><div class="alert alert--info" data-tracking-message hidden><strong>Order received</strong><p>Your order is being prepared. Tracking updates will appear here as your order progresses.</p></div></div></div></div></section>`;
 	pageMount.querySelector("[data-track-order]").addEventListener("click", (event) => {
 		event.target.hidden = true;
 		pageMount.querySelector("[data-tracking-message]").hidden = false;
@@ -47,7 +47,7 @@ function renderConfirmation(pageMount, order) {
 }
 
 function renderEmptyCheckout(pageMount) {
-	pageMount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--info"><div><h1>Your checkout is waiting on your cart</h1><p>Add at least one dish before placing an order.</p><a class="button" href="restaurants.html">Continue Shopping</a></div></div></div></section>`;
+	pageMount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--info"><div><h1>Your checkout is waiting on your cart</h1><p>Add at least one pizza before placing your demo order.</p><a class="button" href="menu.html?restaurant=rest-003">Browse Bominic's Menu</a></div></div></div></section>`;
 }
 
 function setScheduledDeliveryVisibility() {

@@ -69,7 +69,7 @@ function initializeRestaurantPage() {
 	pageMount.innerHTML = `
 		<section class="section" aria-labelledby="restaurants-page-title">
 			<div class="container">
-				<div class="section__header"><div><span class="eyebrow">Find your next favourite</span><h1 id="restaurants-page-title">Restaurants near you</h1><p>Explore local kitchens, compare what matters, and make your next meal count.</p></div></div>
+				<div class="section__header"><div><span class="eyebrow">Bominic's Pizza first</span><h1 id="restaurants-page-title">Restaurants near you</h1><p>Start with Bominic's Pizza in Palampur, then explore more demo kitchens.</p><p class="form__hint">Bominic's: Shop 7, HRTC Complex, Palampur · <a href="tel:+919988454540">+91 99884 54540</a></p></div><a class="button" href="menu.html?restaurant=rest-003">Order from Bominic's</a></div>
 				<form class="form" data-restaurant-filters role="search">
 					<div class="form__group"><label class="form__label" for="restaurant-search">Search restaurants</label><input class="input" id="restaurant-search" type="search" placeholder="Try a name, cuisine, or area" data-restaurant-search></div>
 					<div class="restaurant-filter-grid">

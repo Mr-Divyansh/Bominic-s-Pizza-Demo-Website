@@ -71,11 +71,7 @@ function initializeMenuPage() {
 	const pageMount = document.querySelector("[data-menu-page]");
 	if (!pageMount || typeof restaurants === "undefined" || typeof foodItems === "undefined") return;
 
-	const restaurant = findRestaurantFromQuery();
-	if (!restaurant) {
-		renderInvalidMenu(pageMount);
-		return;
-	}
+	const restaurant = findRestaurantFromQuery() || restaurants.find((item) => item.id === "rest-003") || restaurants[0];
 
 	const menuItems = foodItems.filter((foodItem) => foodItem.restaurantId === restaurant.id);
 	const categories = [...new Set(menuItems.map((foodItem) => foodItem.category))].sort();

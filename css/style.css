@@ -1,21 +1,21 @@
 :root {
-	--color-primary: #ff6b35;
-	--color-primary-dark: #d94e20;
-	--color-primary-soft: #fff0e9;
-	--color-background: #fff8f0;
+	--color-primary: #c1272d;
+	--color-primary-dark: #931b20;
+	--color-primary-soft: #fdecec;
+	--color-background: #fffbf5;
 	--color-surface: #ffffff;
-	--color-surface-muted: #f8eee5;
-	--color-dark: #2d1b12;
-	--color-muted: #735e54;
-	--color-border: #eadbd0;
+	--color-surface-muted: #f9efe3;
+	--color-dark: #231310;
+	--color-muted: #6f5b52;
+	--color-border: #eedfd1;
 	--color-success: #2f7d5a;
 	--color-success-soft: #eaf6ef;
 	--color-warning: #a86416;
 	--color-warning-soft: #fff4dc;
 	--color-danger: #b43b36;
 	--color-danger-soft: #fcebea;
-	--color-accent: #177e89;
-	--color-accent-soft: #e4f4f3;
+	--color-accent: #1f6f5b;
+	--color-accent-soft: #e6f2ec;
 	--font-display: "Trebuchet MS", "Segoe UI", sans-serif;
 	--font-body: "Nunito Sans", "Segoe UI", sans-serif;
 	--space-1: 0.25rem;
@@ -128,7 +128,7 @@ a:hover { color: var(--color-dark); }
 .section--muted { background: var(--color-surface-muted); }
 .eyebrow { display: inline-block; margin-bottom: var(--space-3); color: var(--color-primary-dark); font-size: 0.78rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 
-.hero { overflow: hidden; background: linear-gradient(115deg, #fff8f0 0%, #fff0e5 54%, #f8ddd0 100%); }
+.hero { overflow: hidden; background: linear-gradient(115deg, #fffbf5 0%, #fdf0e1 54%, #f6dcc8 100%); }
 .hero__inner { display: grid; align-items: center; gap: var(--space-6); min-height: min(42rem, calc(100vh - 4.5rem)); padding-block: var(--space-7); }
 .hero__content { max-width: 38rem; }
 .hero__content p { max-width: 32rem; font-size: 1.1rem; }
@@ -220,13 +220,14 @@ button.button:hover {
 	position: sticky;
 	z-index: 10;
 	top: 0;
-	background: rgb(255 248 240 / 94%);
+	background: rgb(255 251 245 / 96%);
 	border-bottom: 1px solid var(--color-border);
 	backdrop-filter: blur(14px);
 }
 
 .navbar__inner {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	min-height: 4.5rem;
@@ -259,6 +260,7 @@ button.button:hover {
 .navbar__menu {
 	display: flex;
 	flex-direction: column;
+	flex-basis: 100%;
 	gap: var(--space-2);
 	max-height: 0;
 	padding: 0;
@@ -269,7 +271,7 @@ button.button:hover {
 }
 
 .navbar__menu.is-open {
-	max-height: 30rem;
+	max-height: 34rem;
 	padding: var(--space-4) 0;
 	visibility: visible;
 	opacity: 1;
@@ -495,6 +497,35 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgb(2
 	.offer-grid,
 	.benefit-grid,
 	.review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.hero__actions .button { flex: 0 1 auto; }
+}
+
+@media (max-width: 39.99rem) {
+	.hero__inner { min-height: auto; padding-block: var(--space-6); gap: var(--space-5); }
+	.hero__actions { display: grid; grid-template-columns: 1fr; }
+	.hero__actions .button { width: 100%; text-align: center; }
+	.hero__visual img { aspect-ratio: 4 / 3; }
+	.hero__note { right: 0.75rem; bottom: 0.75rem; padding: 0.5rem 0.75rem; }
+	.category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.food-card__actions { align-items: stretch; }
+	.food-card__actions > div { display: grid; grid-template-columns: 1fr; width: 100%; }
+	.food-card__actions .button { width: 100%; text-align: center; }
+	.cart-line__body { grid-template-columns: 1fr; }
+	.cart-line__image { width: 100%; height: 11rem; }
+	.coupon-form__row { grid-template-columns: 1fr; }
+	.filter-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.footer__grid { grid-template-columns: 1fr; }
+	.navbar__menu .navbar__link { padding: 0.7rem 0; }
+	.navbar__cart { margin-top: 0.25rem; }
+	.section__header { flex-direction: column; align-items: stretch; }
+	.restaurant-card__meta { flex-direction: column; align-items: flex-start; }
+	.checkout-confirmation__actions { display: grid; grid-template-columns: 1fr; }
+	.checkout-confirmation__actions .button { width: 100%; text-align: center; }
+	.product-detail__actions { display: grid; grid-template-columns: 1fr; }
+	.product-detail__actions .button { width: 100%; }
+	.quantity-control > div { display: grid; grid-template-columns: auto 1fr auto; gap: 0.5rem; align-items: center; }
+	.quantity-control input { width: 100%; }
+	.modal__content { width: min(100% - 1rem, 34rem); padding: var(--space-5); }
 }
 
 @media (min-width: 64rem) {
