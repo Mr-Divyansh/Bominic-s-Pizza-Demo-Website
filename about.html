@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Learn about the FreshBite food-delivery concept, its mission, and the people behind the project.">
+	<title>About FreshBite</title>
+	<link rel="stylesheet" href="css/style.css">
+	<style>
+		.about-hero { padding: 4rem 0; background: linear-gradient(120deg, var(--color-dark), #573528); }
+		.about-hero h1, .about-hero p { color: #fff; }
+		.about-hero p { max-width: 42rem; font-size: 1.15rem; opacity: .86; }
+		.about-copy { max-width: 44rem; }
+		.about-values, .team-grid, .stat-grid { display: grid; gap: var(--space-5); }
+		.about-values { grid-template-columns: 1fr; }
+		.about-values .card { height: 100%; }
+		.team-grid { grid-template-columns: 1fr; }
+		.team-member { text-align: center; }
+		.team-member__avatar { display: grid; place-items: center; width: 5rem; height: 5rem; margin: 0 auto var(--space-3); border-radius: 50%; color: #fff; background: var(--color-primary); font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+		.team-member p { margin-bottom: 0; }
+		.stat-grid { grid-template-columns: repeat(2, 1fr); }
+		.stat { padding: var(--space-4); border-left: 3px solid var(--color-primary); }
+		.stat strong { display: block; color: var(--color-primary-dark); font-family: var(--font-display); font-size: 2rem; line-height: 1.1; }
+		.stat span { color: var(--color-muted); font-size: .9rem; }
+		.achievement-list { display: grid; gap: var(--space-3); padding: 0; list-style: none; }
+		.achievement-list li { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); }
+		.achievement-list strong { display: block; margin-bottom: var(--space-1); }
+		.about-cta { padding: var(--space-7) 0; color: #fff; background: var(--color-accent); }
+		.about-cta h2, .about-cta p { color: #fff; }
+		@media (min-width: 40rem) {
+			.about-hero { padding: 6rem 0; }
+			.about-values { grid-template-columns: repeat(3, 1fr); }
+			.team-grid { grid-template-columns: repeat(3, 1fr); }
+			.stat-grid { grid-template-columns: repeat(4, 1fr); }
+		}
+	</style>
+</head>
+<body>
+	<div data-navbar></div>
+	<main>
+		<section class="about-hero" aria-labelledby="about-title">
+			<div class="container">
+				<span class="eyebrow" style="color: #ffd0bd;">A better way to find dinner</span>
+				<h1 id="about-title">Food should bring people closer.</h1>
+				<p>FreshBite is a frontend project exploring how online food ordering can feel more personal, transparent, and joyful for customers and local kitchens.</p>
+				<a class="button" href="restaurants.html">Explore restaurants</a>
+			</div>
+		</section>
+
+		<section class="section" aria-labelledby="story-title">
+			<div class="container about-copy">
+				<span class="eyebrow">Our story</span>
+				<h2 id="story-title">Built around the moment you decide what sounds good.</h2>
+				<p>FreshBite began as an internship project with a simple question: can a food-ordering experience feel as inviting as the meal itself? The concept brings menus, neighbourhood restaurants, and helpful order details into one calm, easy-to-use place.</p>
+				<p>Every part of the experience is designed for practice and learning: restaurant discovery, thoughtful menu presentation, a clear cart, and a checkout flow that keeps people informed.</p>
+			</div>
+		</section>
+
+		<section class="section section--muted" aria-labelledby="direction-title">
+			<div class="container">
+				<div class="section__header"><div><span class="eyebrow">What guides us</span><h2 id="direction-title">A small idea with a clear direction.</h2></div></div>
+				<div class="about-values">
+					<article class="card"><div class="card__body"><h3>Mission</h3><p>Make it easier to discover good food and support the kitchens that make every dish worth remembering.</p></div></article>
+					<article class="card"><div class="card__body"><h3>Vision</h3><p>Create a food-delivery experience where choice feels simple, information feels honest, and every order feels considered.</p></div></article>
+					<article class="card"><div class="card__body"><h3>Why FreshBite</h3><p>We focus on useful details, welcoming design, and a digital experience that respects both time and appetite.</p></div></article>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" aria-labelledby="team-title">
+			<div class="container"><div class="section__header"><div><span class="eyebrow">The team</span><h2 id="team-title">Curious people, shared table.</h2><p>FreshBite is presented as a learning project, shaped by a small multidisciplinary team.</p></div></div>
+				<div class="team-grid">
+					<article class="card team-member"><div class="card__body"><span class="team-member__avatar" aria-hidden="true">AR</span><h3>Aisha Rao</h3><p>Product and research</p></div></article>
+					<article class="card team-member"><div class="card__body"><span class="team-member__avatar" aria-hidden="true">KM</span><h3>Kabir Mehta</h3><p>Design and experience</p></div></article>
+					<article class="card team-member"><div class="card__body"><span class="team-member__avatar" aria-hidden="true">NS</span><h3>Nisha Shah</h3><p>Frontend development</p></div></article>
+				</div>
+			</div>
+		</section>
+
+		<section class="section section--muted" aria-labelledby="milestones-title">
+			<div class="container"><div class="section__header"><div><span class="eyebrow">Progress worth sharing</span><h2 id="milestones-title">Project milestones</h2></div></div><ul class="achievement-list"><li><strong>First concept shipped</strong><span>Established the FreshBite visual language and responsive foundation.</span></li><li><strong>Data-driven menus</strong><span>Created reusable restaurant, dish, offer, and review data for the frontend experience.</span></li><li><strong>Complete ordering path</strong><span>Connected discovery, product details, cart, checkout, and simulated order tracking.</span></li></ul></div>
+		</section>
+
+		<section class="section" aria-labelledby="stats-title">
+			<div class="container"><div class="section__header"><div><span class="eyebrow">The concept at a glance</span><h2 id="stats-title">A growing little world of food.</h2></div></div><div class="stat-grid"><div class="stat"><strong>8</strong><span>sample restaurants</span></div><div class="stat"><strong>25</strong><span>sample dishes</span></div><div class="stat"><strong>4</strong><span>delivery choices</span></div><div class="stat"><strong>100%</strong><span>frontend simulation</span></div></div></div>
+		</section>
+
+		<section class="about-cta" aria-labelledby="about-cta-title"><div class="container"><h2 id="about-cta-title">Ready to find your next favourite?</h2><p>Take a look around the FreshBite menu and see what catches your eye.</p><a class="button button--secondary" href="restaurants.html">Start exploring</a></div></section>
+	</main>
+	<div data-footer></div>
+	<script src="js/main.js"></script>
+</body>
+</html>

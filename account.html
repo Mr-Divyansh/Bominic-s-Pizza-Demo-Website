@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Manage your FreshBite profile, orders, addresses, and wishlist."><title>My Account | FreshBite</title><link rel="stylesheet" href="css/style.css"></head>
+<body><div data-navbar></div><main data-account-page></main><div data-footer></div><script src="js/data.js"></script><script src="js/main.js"></script><script src="js/auth.js"></script><script>
+const ACCOUNT_ORDERS_KEY = "freshbiteOrders";
+const ACCOUNT_WISHLIST_KEY = "freshbiteWishlist";
+
+function accountRead(key, fallback) {
+	try {
+		const value = JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+		return value;
+	} catch (error) {
+		return fallback;
+	}
+}
+
+function accountWrite(key, value) {
+	localStorage.setItem(key, JSON.stringify(value));
+}
+
+function accountOrdersForUser(user) {
+	return accountRead(ACCOUNT_ORDERS_KEY, []).filter((order) => !order.userId || order.userId === user.id || order.delivery?.phone === user.phone);
+}
+
+function renderAccountPage() {
+	const mount = document.querySelector("[data-account-page]");
+	if (!mount) return;
+	const user = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+	if (!user) {
+		mount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--info"><div><span class="eyebrow">FreshBite account</span><h1>Sign in to see your account</h1><p>Keep your order history, saved addresses, and favourite dishes together.</p><div class="account-actions"><a class="button" href="login.html">Login</a><a class="button button--secondary" href="register.html">Register</a></div></div></div></div></section>`;
+		return;
+	}
+
+	const orders = accountOrdersForUser(user);
+	const wishlistIds = accountRead(ACCOUNT_WISHLIST_KEY, []);
+	const wishlist = wishlistIds.map((id) => foodItems.find((foodItem) => foodItem.id === id)).filter(Boolean);
+	const addressesKey = `freshbiteAddresses_${user.id}`;
+	const addresses = accountRead(addressesKey, []);
+	mount.innerHTML = `<section class="section"><div class="container"><div class="section__header"><div><span class="eyebrow">Your FreshBite</span><h1>Welcome, ${escapeHtml(user.name)}</h1><p>Manage your details and keep track of every meal.</p></div><button class="button button--ghost button--small" type="button" data-account-logout>Log out</button></div><div class="account-layout"><div><section class="card account-panel"><div class="card__body"><h2>Profile</h2><dl class="summary-list"><div><dt>Name</dt><dd>${escapeHtml(user.name)}</dd></div><div><dt>Email</dt><dd>${escapeHtml(user.email)}</dd></div></dl></div></section><section class="card account-panel"><div class="card__body"><div class="section__header"><div><h2>Saved addresses</h2><p>Add delivery locations for faster checkout.</p></div></div><div data-address-list>${renderAddresses(addresses)}</div><form class="form" data-address-form><div class="checkout-fields"><div class="form__group"><label class="form__label" for="address-label">Label</label><input class="input" id="address-label" name="label" placeholder="Home or Work" required></div><div class="form__group"><label class="form__label" for="saved-address">Address</label><input class="input" id="saved-address" name="address" autocomplete="street-address" required></div><div class="form__group"><label class="form__label" for="saved-city">City</label><input class="input" id="saved-city" name="city" required></div><div class="form__group"><label class="form__label" for="saved-pincode">Pincode</label><input class="input" id="saved-pincode" name="pincode" pattern="[0-9]{6}" required></div></div><button class="button button--small" type="submit">Save address</button></form></div></section><section class="card account-panel"><div class="card__body"><h2>Wishlist</h2><div class="food-grid" data-wishlist>${renderWishlist(wishlist)}</div></div></section></div><aside><section class="card account-panel"><div class="card__body"><h2>Order history</h2><div data-orders>${renderOrders(orders)}</div></div></section></aside></div></div></section>`;
+	attachAccountEvents(user, addressesKey);
+}
+
+function renderAddresses(addresses) {
+	if (addresses.length === 0) return `<p class="form__hint">No saved addresses yet.</p>`;
+	return addresses.map((address) => `<article class="saved-address"><div><strong>${escapeHtml(address.label)}</strong><p>${escapeHtml(address.address)}, ${escapeHtml(address.city)} - ${escapeHtml(address.pincode)}</p></div><button class="button button--ghost button--small" type="button" data-remove-address="${address.id}">Remove</button></article>`).join("");
+}
+
+function renderWishlist(wishlist) {
+	if (wishlist.length === 0) return `<p class="form__hint">Your wishlist is empty. Save dishes you want to try.</p>`;
+	return wishlist.map((foodItem) => `<article class="food-card"><img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" loading="lazy"><div class="food-card__body"><h3>${escapeHtml(foodItem.name)}</h3><div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div><button class="button button--small" type="button" data-wishlist-add="${foodItem.id}">Add to Cart</button><button class="button button--ghost button--small" type="button" data-wishlist-remove="${foodItem.id}">Remove</button></div></div></div></article>`).join("");
+}
+
+function renderOrders(orders) {
+	if (orders.length === 0) return `<p class="form__hint">No orders yet. Your next meal is waiting.</p><a class="button button--small" href="restaurants.html">Explore restaurants</a>`;
+	return orders.map((order) => `<article class="order-card"><div class="order-card__header"><strong>${escapeHtml(order.id)}</strong><span class="badge badge--accent">${escapeHtml(order.status || "Order Confirmed")}</span></div><p>${new Date(order.createdAt).toLocaleDateString()} · ${order.items.length} item${order.items.length === 1 ? "" : "s"} · <strong>₹${Math.round(order.totals.total)}</strong></p><ul class="order-items">${order.items.map((item) => `<li>${escapeHtml(item.name)} × ${item.quantity}</li>`).join("")}</ul><details><summary>Delivery information</summary><p>${escapeHtml(order.delivery.fullName)}<br>${escapeHtml(order.delivery.address)}, ${escapeHtml(order.delivery.city)}<br>${escapeHtml(order.delivery.state)} - ${escapeHtml(order.delivery.pincode)}<br>${escapeHtml(order.delivery.phone)}</p></details>${renderTracking(order)}</article>`).join("");
+}
+
+function renderTracking(order) {
+	const statuses = ["Order Confirmed", "Preparing", "Out for Delivery", "Delivered"];
+	const currentIndex = Math.max(0, statuses.findIndex((status) => status.toLowerCase() === String(order.status || "Preparing").toLowerCase()));
+	return `<div class="tracking"><strong>Order tracking</strong><ol>${statuses.map((status, index) => `<li class="${index <= currentIndex ? "is-complete" : ""}">${status}</li>`).join("")}</ol></div>`;
+}
+
+function attachAccountEvents(user, addressesKey) {
+	document.querySelector("[data-account-logout]").addEventListener("click", () => { logoutUser(); window.location.href = "index.html"; });
+	document.querySelector("[data-address-form]").addEventListener("submit", (event) => {
+		event.preventDefault();
+		const form = event.currentTarget;
+		if (!form.checkValidity()) { form.reportValidity(); return; }
+		const addresses = accountRead(addressesKey, []);
+		addresses.push({ id: `address-${Date.now()}`, label: form.label.value.trim(), address: form.address.value.trim(), city: form.city.value.trim(), pincode: form.pincode.value.trim() });
+		accountWrite(addressesKey, addresses);
+		renderAccountPage();
+	});
+	document.querySelectorAll("[data-remove-address]").forEach((button) => button.addEventListener("click", () => {
+		accountWrite(addressesKey, accountRead(addressesKey, []).filter((address) => address.id !== button.dataset.removeAddress));
+		renderAccountPage();
+	}));
+	document.querySelectorAll("[data-wishlist-remove]").forEach((button) => button.addEventListener("click", () => {
+		accountWrite(ACCOUNT_WISHLIST_KEY, accountRead(ACCOUNT_WISHLIST_KEY, []).filter((id) => id !== button.dataset.wishlistRemove));
+		renderAccountPage();
+	}));
+	document.querySelectorAll("[data-wishlist-add]").forEach((button) => button.addEventListener("click", () => {
+		addToCart(button.dataset.wishlistAdd);
+		button.textContent = "Added";
+	}));
+}
+
+document.addEventListener("DOMContentLoaded", renderAccountPage);
+</script></body>
+</html>
