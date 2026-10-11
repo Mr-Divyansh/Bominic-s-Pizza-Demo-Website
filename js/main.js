@@ -66,6 +66,18 @@ function renderNavbar() {
 		? '<a class="navbar__link" href="account.html">Account</a><button class="navbar__link navbar__logout" type="button" data-logout>Logout</button>'
 		: '<a class="navbar__link" href="login.html">Login</a>';
 
+	const primaryLinks = `
+				<a class="navbar__link" href="index.html">Home</a>
+				<a class="navbar__link" href="menu.html?restaurant=rest-003">Menu</a>
+				<a class="navbar__link" href="restaurants.html">Restaurants</a>
+				<a class="navbar__link" href="about.html">About</a>
+				<a class="navbar__link" href="contact.html">Contact</a>`;
+
+	const accountLinks = `<div class="navbar__actions">
+				${accountEntry}
+				<a class="navbar__link navbar__cart" href="cart.html" aria-label="View cart">Cart <span class="badge" data-cart-count hidden>0</span></a>
+			</div>`;
+
 	navbarMount.setAttribute("role", "banner");
 	navbarMount.innerHTML = `
 		<a class="skip-link" href="#main-content">Skip to main content</a>
@@ -73,44 +85,99 @@ function renderNavbar() {
 		<nav class="navbar" aria-label="Primary navigation">
 			<div class="container navbar__inner">
 				<a class="navbar__brand" href="index.html" aria-label="Bominic's Pizza home">Bominic's Pizza</a>
-				<button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="bominics-menu" data-menu-toggle aria-label="Open navigation menu">
+				<button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="bominics-drawer" data-menu-toggle aria-label="Open navigation menu">
 				</button>
-				<div class="navbar__menu" id="bominics-menu" data-menu>
-					<a class="navbar__link" href="index.html">Home</a>
-					<a class="navbar__link" href="menu.html?restaurant=rest-003">Menu</a>
-					<a class="navbar__link" href="restaurants.html">Restaurants</a>
-					<a class="navbar__link" href="about.html">About</a>
-					<a class="navbar__link" href="contact.html">Contact</a>
+				<div class="navbar__menu" id="bominics-menu" data-menu>${primaryLinks}
 				</div>
-				<div class="navbar__actions">
-					${accountEntry}
-					<a class="navbar__link navbar__cart" href="cart.html" aria-label="View cart">Cart <span class="badge" data-cart-count hidden>0</span></a>
-				</div>
+				${accountLinks}
 			</div>
-		</nav>`;
+		</nav>
+		<button class="navbar__scrim" type="button" tabindex="-1" aria-label="Close navigation menu" aria-hidden="true" data-drawer-scrim></button>
+		<div class="navbar__drawer" id="bominics-drawer" data-drawer role="dialog" aria-modal="true" aria-label="Navigation menu" aria-hidden="true" tabindex="-1">
+			<div class="navbar__drawer__head">
+				<h2 class="navbar__drawer__title">Menu</h2>
+				<button class="navbar__drawer__close" type="button" data-drawer-close aria-label="Close navigation menu">&#x2715;</button>
+			</div>
+			<nav class="navbar__drawer__group" aria-label="Pages">${primaryLinks}
+			</nav>
+			<div class="navbar__drawer__group" aria-label="Your account">
+				<span class="navbar__drawer__group-label" aria-hidden="true">Your account</span>
+				${accountLinks}
+			</div>
+		</div>`;
 
-	const menu = navbarMount.querySelector("[data-menu]");
+	const drawer = navbarMount.querySelector("[data-drawer]");
+	const scrim = navbarMount.querySelector("[data-drawer-scrim]");
+	const drawerCloseButton = navbarMount.querySelector("[data-drawer-close]");
 	const menuToggle = navbarMount.querySelector("[data-menu-toggle]");
 	const currentPage = window.location.pathname.split("/").pop() || "index.html";
 	navbarMount.querySelectorAll(".navbar__link").forEach((link) => {
 		const linkPage = (link.getAttribute("href") || "").split("?")[0];
 		if (linkPage === currentPage) link.setAttribute("aria-current", "page");
 	});
+
+	function isDrawerOpen() {
+		return drawer.classList.contains("is-open");
+	}
+
+	function setDrawerOpen(shouldOpen) {
+		drawer.classList.toggle("is-open", shouldOpen);
+		scrim.classList.toggle("is-open", shouldOpen);
+		drawer.setAttribute("aria-hidden", String(!shouldOpen));
+		scrim.setAttribute("aria-hidden", String(!shouldOpen));
+		menuToggle.setAttribute("aria-expanded", String(shouldOpen));
+		menuToggle.setAttribute("aria-label", shouldOpen ? "Close navigation menu" : "Open navigation menu");
+		document.body.classList.toggle("navbar-drawer-open", shouldOpen);
+		if (shouldOpen) {
+			/* Flush pending style changes first: the drawer starts life with
+			   visibility: hidden, and calling focus() before the visibility
+			   transition has been applied would silently do nothing. */
+			void drawer.offsetHeight;
+			const initialFocus = drawer.querySelector("[data-drawer-close]") || drawer;
+			if (typeof initialFocus.focus === "function") initialFocus.focus({ preventScroll: true });
+		} else {
+			menuToggle.focus();
+		}
+	}
+
 	menuToggle.addEventListener("click", () => {
-		const isOpen = menu.classList.toggle("is-open");
-		menuToggle.setAttribute("aria-expanded", String(isOpen));
-		menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+		setDrawerOpen(!isDrawerOpen());
 	});
 
-	navbarMount.querySelectorAll(".navbar__link").forEach((link) => {
-		link.addEventListener("click", () => {
-			menu.classList.remove("is-open");
-			menuToggle.setAttribute("aria-expanded", "false");
-		});
+	drawerCloseButton.addEventListener("click", () => setDrawerOpen(false));
+	scrim.addEventListener("click", () => setDrawerOpen(false));
+
+	/* Selecting any drawer link (including the account and cart entries) closes it. */
+	drawer.querySelectorAll("a").forEach((link) => {
+		link.addEventListener("click", () => setDrawerOpen(false));
 	});
 
-	const logoutButton = navbarMount.querySelector("[data-logout]");
-	if (logoutButton) {
+	document.addEventListener("keydown", (event) => {
+		if (!isDrawerOpen()) return;
+		if (event.key === "Escape") {
+			setDrawerOpen(false);
+			return;
+		}
+		if (event.key !== "Tab") return;
+		const focusable = drawer.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+		if (!focusable.length) return;
+		const first = focusable[0];
+		const last = focusable[focusable.length - 1];
+		if (event.shiftKey && (document.activeElement === first || document.activeElement === drawer)) {
+			event.preventDefault();
+			last.focus();
+		} else if (!event.shiftKey && document.activeElement === last) {
+			event.preventDefault();
+			first.focus();
+		}
+	});
+
+	window.addEventListener("resize", () => {
+		if (isDrawerOpen() && window.innerWidth >= 1024) setDrawerOpen(false);
+	});
+
+	const logoutButtons = navbarMount.querySelectorAll("[data-logout]");
+	logoutButtons.forEach((logoutButton) => {
 		logoutButton.addEventListener("click", () => {
 			if (typeof logoutUser === "function") logoutUser();
 			else {
@@ -119,7 +186,7 @@ function renderNavbar() {
 			}
 			window.location.href = "index.html";
 		});
-	}
+	});
 
 	updateCartCount();
 }
