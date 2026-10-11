@@ -1,0 +1,1 @@
+﻿const fs=require('fs');for(const f of ['_audit.js','_func.js','_shots.js']){let t=fs.readFileSync(f,'utf8');const n=t.split(String.fromCharCode(39)+'load'+String.fromCharCode(39)).join(String.fromCharCode(39)+'domcontentloaded'+String.fromCharCode(39)+', timeout: 20000');fs.writeFileSync(f,n);console.log('patched',f,n!==t);}

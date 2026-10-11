@@ -1,0 +1,6 @@
+_func.js: FUNCTIONAL: pass=10 fail=0
+
+_audit.js: DONE part1 (page/overflow/console). pass=78 fail=0
+
+_shots.js: screenshots saved
+

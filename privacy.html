@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bominic's Pizza privacy policy — how demo data is collected and used.">
+  <title>Privacy Policy | Bominic's Pizza</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div data-navbar></div>
+  <main data-policy-page="" data-policy-title="Privacy"></main>
+  <div data-footer></div>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function renderPolicyPage(pageMount, title, bodyHtml) {
+      pageMount.innerHTML = `
+        <section class="section" aria-labelledby="policy-title">
+          <div class="container">
+            <div class="section__header">
+              <div>
+                <span class="eyebrow">Your rights</span>
+                <h1 id="policy-title">${title}</h1>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card__body">
+                ${bodyHtml}
+              </div>
+            </div>
+          </div>
+        </section>`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPolicyPage(
+        document.querySelector("[data-policy-page]"),
+        "Privacy Policy",
+        `<p><span class="eyebrow">Effective date:</span> ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
+
+        <h2>1. Overview</h2>
+        <p>Bominic's Pizza is a frontend demo. We do not operate a real shop, accept real payments, or collect personal data. The site is a client-side simulation built to show how a pizza ordering page can behave, and to let visitors explore a menu, add items to a cart, and place demo orders in their browser.</p>
+
+        <h2>2. What we store</h2>
+        <p>Because this is a frontend demo, the only data stored is in your browser's local storage:</p>
+        <ul>
+          <li>Cart items (<code>freshbiteCart</code>)</li>
+          <li>Wishlist item ids (<code>freshbiteWishlist</code>)</li>
+          <li>Saved delivery addresses (<code>freshbiteAddresses_&lt;user-id&gt;</code>)</li>
+          <li>Demo account details (registered name, email, and a salted SHA-256 password hash, stored under <code>freshbiteUsers</code>)</li>
+          <li>Demo orders (<code>freshbiteOrders</code>)</li>
+        </ul>
+        <p>Nothing is sent to a server. Clearing your browser local storage clears all of it.</p>
+
+        <h2>3. Who can see it</h2>
+        <p>No one outside your browser. The site contains no tracking scripts, analytics, advertising pixels, or third-party data collectors.</p>
+
+        <h2>4. Children</h2>
+        <p>This demo is not directed at children, and we do not knowingly collect data about anyone under 13.</p>
+
+        <h2>5. Changes</h2>
+        <p>We may update this policy from time to time. Changes are noted in the "Effective date" above.</p>
+
+        <h2>6. Contact</h2>
+        <p>For demo questions, email <strong>demo@bominics-pizza.example</strong> (a placeholder, not a live address).</p>`
+      );
+    });
+  </script>
+</body>
+</html>

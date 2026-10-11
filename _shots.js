@@ -1,0 +1,21 @@
+﻿const { chromium } = require('playwright');
+const path = require('path');
+const BASE = 'file://' + path.resolve(__dirname).replace(/\\/g, '/') + '/';
+(async () => {
+  const b = await chromium.launch();
+  const d = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const dp = await d.newPage();
+  await dp.goto(BASE + 'index.html', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await dp.waitForTimeout(800);
+  await dp.screenshot({ path: 'screenshots/_check_home_desktop.png', fullPage: true });
+  const m = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const mp = await m.newPage();
+  await mp.goto(BASE + 'index.html', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await mp.waitForTimeout(800);
+  await mp.screenshot({ path: 'screenshots/_check_home_mobile.png', fullPage: true });
+  await mp.goto(BASE + 'menu.html?restaurant=rest-003', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await mp.waitForTimeout(800);
+  await mp.screenshot({ path: 'screenshots/_check_menu_mobile.png', fullPage: true });
+  await b.close();
+  console.log('screenshots saved');
+})();

@@ -11,9 +11,9 @@ function renderMenuFoodCard(foodItem) {
 		<article class="food-card">
 			<img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" loading="lazy">
 			<div class="food-card__body">
-				<div class="food-card__meta"><span class="badge ${foodItem.dietaryType === "Vegan" ? "badge--success" : foodItem.dietaryType === "Non-Veg" ? "badge--warning" : ""}">${escapeHtml(foodItem.dietaryType)}</span><span class="rating" aria-label="${foodItem.rating} out of 5 stars">★ ${foodItem.rating}</span></div>
+				<div class="food-card__meta"><span class="badge ${foodItem.dietaryType === "Vegan" ? "badge--success" : foodItem.dietaryType === "Non-Veg" ? "badge--warning" : ""}">${escapeHtml(foodItem.dietaryType)}</span><span class="food-card__category">${escapeHtml(foodItem.category)}</span><span class="rating" aria-label="${foodItem.rating} out of 5 stars">★ ${foodItem.rating}</span></div>
 				<h2>${escapeHtml(foodItem.name)}</h2><p class="food-card__description">${escapeHtml(foodItem.description)}</p>
-				<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div><button class="button button--ghost button--small wishlist-toggle" type="button" data-wishlist-toggle="${foodItem.id}" aria-pressed="${isWishlistItem(foodItem.id)}">${isWishlistItem(foodItem.id) ? "♥ Saved" : "♡ Save"}</button> <a class="button button--secondary button--small" href="product.html?food=${encodeURIComponent(foodItem.id)}">View Details</a> <button class="button button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div></div>
+				<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div class="food-card__buttons"><button class="button button--ghost button--small wishlist-toggle" type="button" data-wishlist-toggle="${foodItem.id}" aria-pressed="${isWishlistItem(foodItem.id)}">${isWishlistItem(foodItem.id) ? "♥ Saved" : "♡ Save"}</button><a class="button button--secondary button--small" href="product.html?food=${encodeURIComponent(foodItem.id)}">Details</a><button class="button button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div></div>
 			</div>
 		</article>`;
 }
@@ -87,6 +87,22 @@ function initializeMenuPage() {
 		});
 		updateMenuResults(menuItems);
 	}));
+
+	const query = new URLSearchParams(window.location.search);
+	const categoryQuery = query.get("category");
+	const dietaryQuery = query.get("dietary");
+	const categoryFilter = pageMount.querySelector("[data-category-filter]");
+	if (categoryFilter && categoryQuery && [...categoryFilter.options].some((option) => option.value === categoryQuery)) {
+		categoryFilter.value = categoryQuery;
+	}
+	if (dietaryQuery) {
+		pageMount.querySelectorAll("[data-dietary-filter]").forEach((dietaryButton) => {
+			const isMatch = (dietaryButton.dataset.dietary || "") === dietaryQuery;
+			dietaryButton.classList.toggle("is-active", isMatch);
+			dietaryButton.classList.toggle("button--secondary", !isMatch);
+		});
+	}
+
 	updateMenuResults(menuItems);
 }
 
