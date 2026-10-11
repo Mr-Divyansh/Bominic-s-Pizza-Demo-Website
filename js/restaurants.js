@@ -1,7 +1,7 @@
 function renderRestaurantCard(restaurant) {
 	return `
 		<article class="restaurant-card">
-			<img class="restaurant-card__image" src="${restaurant.image}" alt="${escapeHtml(restaurant.name)} cuisine" loading="lazy">
+			<img class="restaurant-card__image" src="${restaurant.image}" alt="${escapeHtml(restaurant.name)} cuisine" width="800" height="500" loading="lazy">
 			<div class="restaurant-card__body">
 				<div class="restaurant-card__meta"><span class="badge ${restaurant.featured ? "badge--accent" : ""}">${restaurant.featured ? "Featured" : escapeHtml(restaurant.priceRange)}</span><span class="rating" aria-label="${restaurant.rating} out of 5 stars">★ ${restaurant.rating}</span></div>
 				<h2>${escapeHtml(restaurant.name)}</h2>
@@ -82,7 +82,7 @@ function initializeRestaurantPage() {
 				</form>
 			</div>
 		</section>
-		<section class="section section--muted" aria-labelledby="results-title"><div class="container"><h2 id="results-title" class="sr-only">Restaurant results</h2><div class="restaurant-grid" data-restaurant-results><div class="loading">Loading restaurants...</div></div><div class="alert alert--info" data-restaurant-empty hidden><div><strong>No restaurants found</strong><p>Try a broader search or remove one of your filters.</p><button class="button button--small" type="button" data-clear-filters>Clear filters</button></div></div></div></section>`;
+		<section class="section section--muted" aria-labelledby="results-title"><div class="container"><h2 id="results-title" class="sr-only">Restaurant results</h2><div class="restaurant-grid" data-restaurant-results><div class="loading" role="status">Loading restaurants...</div></div><div class="alert alert--info" data-restaurant-empty hidden><div><strong>No restaurants found</strong><p>Try a broader search or remove one of your filters.</p><button class="button button--small" type="button" data-clear-filters>Clear filters</button></div></div></div></section>`;
 
 	if (queryCuisine) {
 		const matchingCuisine = cuisines.find((cuisine) => cuisine.toLowerCase().includes(queryCuisine.toLowerCase()));

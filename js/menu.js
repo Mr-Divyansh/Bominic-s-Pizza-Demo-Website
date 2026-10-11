@@ -9,11 +9,11 @@ function findRestaurantFromQuery() {
 function renderMenuFoodCard(foodItem) {
 	return `
 		<article class="food-card">
-			<img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" loading="lazy">
+			<img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" width="800" height="500" loading="lazy">
 			<div class="food-card__body">
 				<div class="food-card__meta"><span class="badge ${foodItem.dietaryType === "Vegan" ? "badge--success" : foodItem.dietaryType === "Non-Veg" ? "badge--warning" : ""}">${escapeHtml(foodItem.dietaryType)}</span><span class="food-card__category">${escapeHtml(foodItem.category)}</span><span class="rating" aria-label="${foodItem.rating} out of 5 stars">★ ${foodItem.rating}</span></div>
 				<h2>${escapeHtml(foodItem.name)}</h2><p class="food-card__description">${escapeHtml(foodItem.description)}</p>
-				<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div class="food-card__buttons"><button class="button button--ghost button--small wishlist-toggle" type="button" data-wishlist-toggle="${foodItem.id}" aria-pressed="${isWishlistItem(foodItem.id)}">${isWishlistItem(foodItem.id) ? "♥ Saved" : "♡ Save"}</button><a class="button button--secondary button--small" href="product.html?food=${encodeURIComponent(foodItem.id)}">Details</a><button class="button button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div></div>
+				<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div class="food-card__buttons"><button class="button button--ghost button--small wishlist-toggle" type="button" data-wishlist-toggle="${foodItem.id}" aria-pressed="${isWishlistItem(foodItem.id)}">${isWishlistItem(foodItem.id) ? "♥ Saved" : "♡ Save"}</button><a class="button button--secondary button--small" href="product.html?food=${encodeURIComponent(foodItem.id)}">Details</a><button class="button button--secondary button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div></div>
 			</div>
 		</article>`;
 }
@@ -59,6 +59,7 @@ function updateMenuResults(menuItems) {
 		const saved = toggleWishlistItem(button.dataset.wishlistToggle);
 		button.textContent = saved ? "♥ Saved" : "♡ Save";
 		button.setAttribute("aria-pressed", String(saved));
+		announceStatus(saved ? "Dish saved to your wishlist." : "Dish removed from your wishlist.");
 	}));
 }
 
@@ -77,13 +78,14 @@ function initializeMenuPage() {
 	const categories = [...new Set(menuItems.map((foodItem) => foodItem.category))].sort();
 	pageMount.innerHTML = `
 		<section class="section" aria-labelledby="menu-page-title"><div class="container"><a href="restaurants.html" class="button button--ghost button--small">← All restaurants</a><div class="section__header"><div><span class="eyebrow">Fresh from the kitchen</span><h1 id="menu-page-title">${escapeHtml(restaurant.name)}</h1><p>${escapeHtml(restaurant.description)}</p><div class="restaurant-card__meta"><span class="rating" aria-label="${restaurant.rating} out of 5 stars">★ ${restaurant.rating}</span><span>${escapeHtml(restaurant.cuisine)}</span><span>${escapeHtml(restaurant.deliveryTime)}</span><span>${escapeHtml(restaurant.location)}</span></div></div></div></div></section>
-		<section class="section section--muted" aria-labelledby="menu-items-title"><div class="container"><div class="section__header"><div><span class="eyebrow">Take your pick</span><h2 id="menu-items-title">Our menu</h2></div><span class="form__hint" data-menu-result-count aria-live="polite">Loading dishes...</span></div><form class="form" data-menu-filters role="search"><div class="form__group"><label class="form__label" for="food-search">Search this menu</label><input class="input" id="food-search" type="search" placeholder="Search dishes or ingredients" data-food-search></div><div class="restaurant-filter-grid"><div class="form__group"><label class="form__label" for="category-filter">Category</label><select class="select" id="category-filter" data-category-filter><option value="">All categories</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}</select></div><div class="form__group"><label class="form__label" for="menu-sort">Sort by</label><select class="select" id="menu-sort" data-menu-sort><option value="name-asc">Name A-Z</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="rating-desc">Top rated</option></select></div></div><div class="form__group"><span class="form__label">Dietary preference</span><div class="filter-pills"><button class="button button--small is-active" type="button" data-dietary-filter data-dietary="">All</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Veg">Veg</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Non-Veg">Non-Veg</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Vegan">Vegan</button></div></div></form><div class="food-grid" data-menu-results><div class="loading">Loading dishes...</div></div><div class="alert alert--info" data-menu-empty hidden><div><strong>No dishes found</strong><p>Try a different search, category, or dietary preference.</p></div></div></div></section>`;
+		<section class="section section--muted" aria-labelledby="menu-items-title"><div class="container"><div class="section__header"><div><span class="eyebrow">Take your pick</span><h2 id="menu-items-title">Our menu</h2></div><span class="form__hint" data-menu-result-count aria-live="polite">Loading dishes...</span></div><form class="form" data-menu-filters role="search"><div class="form__group"><label class="form__label" for="food-search">Search this menu</label><input class="input" id="food-search" type="search" placeholder="Search dishes or ingredients" data-food-search></div><div class="restaurant-filter-grid"><div class="form__group"><label class="form__label" for="category-filter">Category</label><select class="select" id="category-filter" data-category-filter><option value="">All categories</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}</select></div><div class="form__group"><label class="form__label" for="menu-sort">Sort by</label><select class="select" id="menu-sort" data-menu-sort><option value="name-asc">Name A-Z</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="rating-desc">Top rated</option></select></div></div><div class="form__group"><span class="form__label" id="dietary-filter-label">Dietary preference</span><div class="filter-pills" role="group" aria-labelledby="dietary-filter-label"><button class="button button--small is-active" type="button" data-dietary-filter data-dietary="" aria-pressed="true">All</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Veg" aria-pressed="false">Veg</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Non-Veg" aria-pressed="false">Non-Veg</button><button class="button button--secondary button--small" type="button" data-dietary-filter data-dietary="Vegan" aria-pressed="false">Vegan</button></div></div></form><div class="food-grid" data-menu-results><div class="loading" role="status">Loading dishes...</div></div><div class="alert alert--info" data-menu-empty hidden><div><strong>No dishes found</strong><p>Try a different search, category, or dietary preference.</p></div></div></div></section>`;
 
 	pageMount.querySelectorAll("[data-menu-filters] input, [data-menu-filters] select").forEach((control) => control.addEventListener("input", () => updateMenuResults(menuItems)));
 	pageMount.querySelectorAll("[data-dietary-filter]").forEach((button) => button.addEventListener("click", () => {
 		pageMount.querySelectorAll("[data-dietary-filter]").forEach((dietaryButton) => {
 			dietaryButton.classList.toggle("is-active", dietaryButton === button);
 			dietaryButton.classList.toggle("button--secondary", dietaryButton !== button);
+			dietaryButton.setAttribute("aria-pressed", String(dietaryButton === button));
 		});
 		updateMenuResults(menuItems);
 	}));
@@ -100,6 +102,7 @@ function initializeMenuPage() {
 			const isMatch = (dietaryButton.dataset.dietary || "") === dietaryQuery;
 			dietaryButton.classList.toggle("is-active", isMatch);
 			dietaryButton.classList.toggle("button--secondary", !isMatch);
+			dietaryButton.setAttribute("aria-pressed", String(isMatch));
 		});
 	}
 

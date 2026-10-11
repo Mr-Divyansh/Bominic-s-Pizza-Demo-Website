@@ -40,9 +40,16 @@ function generateOrderId() {
 
 function renderConfirmation(pageMount, order) {
 	pageMount.innerHTML = `<section class="section"><div class="container"><div class="alert alert--success"><div><span class="eyebrow">Demo order placed</span><h1>Thanks, ${escapeHtml(order.delivery.fullName)}!</h1><p>This is a demo, so no real order was placed and nothing was charged. Your reference <strong>${order.id}</strong> is saved only in this browser.</p><p>Sample estimated delivery: <strong>${escapeHtml(order.deliveryTime.label)}</strong></p><div class="checkout-confirmation__actions"><button class="button" type="button" data-track-order>View sample tracking</button><a class="button button--secondary" href="account.html">View order history</a><a class="button button--ghost" href="menu.html?restaurant=rest-003">Order more pizzas</a></div><div class="alert alert--info" data-tracking-message hidden><strong>Simulated status</strong><p>This tracking panel is a frontend simulation stored in your browser. It is not connected to a real kitchen or courier.</p></div></div></div></div></section>`;
+	const confirmationTitle = pageMount.querySelector("h1");
+	if (confirmationTitle) {
+		confirmationTitle.setAttribute("tabindex", "-1");
+		confirmationTitle.focus();
+	}
+	announceStatus(`Demo order placed. Reference ${order.id}. Estimated delivery ${order.deliveryTime.label}. Nothing was charged.`);
 	pageMount.querySelector("[data-track-order]").addEventListener("click", (event) => {
 		event.target.hidden = true;
 		pageMount.querySelector("[data-tracking-message]").hidden = false;
+		announceStatus("Sample tracking shown. This is a simulated status stored in your browser.");
 	});
 }
 

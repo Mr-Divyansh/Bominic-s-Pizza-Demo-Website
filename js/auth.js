@@ -16,7 +16,24 @@ function saveRegisteredUsers(users) {
 	localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 }
 
-function registerUser(name, email, password, confirmPassword) {
+function createPasswordSalt() {
+	const saltBytes = new Uint8Array(16);
+	crypto.getRandomValues(saltBytes);
+	return Array.from(saltBytes).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function hashPassword(password, salt) {
+	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${salt}:${password}`));
+	return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function verifyUserPassword(user, password) {
+	if (user.passwordSalt && user.passwordHash) return (await hashPassword(password, user.passwordSalt)) === user.passwordHash;
+	if (typeof user.password === "string") return user.password === password;
+	return false;
+}
+
+async function registerUser(name, email, password, confirmPassword) {
 	const normalizedEmail = email.trim().toLowerCase();
 	if (!name.trim() || !normalizedEmail || !password || !confirmPassword) return { success: false, message: "Please complete every field." };
 	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) return { success: false, message: "Enter a valid email address." };
@@ -25,16 +42,26 @@ function registerUser(name, email, password, confirmPassword) {
 
 	const users = getRegisteredUsers();
 	if (users.some((user) => user.email === normalizedEmail)) return { success: false, message: "An account with that email already exists." };
-	const user = { id: `user-${Date.now()}`, name: name.trim(), email: normalizedEmail, password };
+	const passwordSalt = createPasswordSalt();
+	const user = { id: `user-${Date.now()}`, name: name.trim(), email: normalizedEmail, passwordSalt, passwordHash: await hashPassword(password, passwordSalt) };
 	users.push(user);
 	saveRegisteredUsers(users);
 	return { success: true, user: { id: user.id, name: user.name, email: user.email } };
 }
 
-function loginUser(email, password, rememberLogin) {
+async function loginUser(email, password, rememberLogin) {
 	const normalizedEmail = email.trim().toLowerCase();
-	const user = getRegisteredUsers().find((registeredUser) => registeredUser.email === normalizedEmail && registeredUser.password === password);
-	if (!user) return { success: false, message: "Email or password is incorrect." };
+	const users = getRegisteredUsers();
+	const user = users.find((registeredUser) => registeredUser.email === normalizedEmail);
+	if (!user || !(await verifyUserPassword(user, password))) return { success: false, message: "Email or password is incorrect." };
+
+	if (typeof user.password === "string") {
+		const passwordSalt = createPasswordSalt();
+		user.passwordSalt = passwordSalt;
+		user.passwordHash = await hashPassword(password, passwordSalt);
+		delete user.password;
+		saveRegisteredUsers(users);
+	}
 
 	const sessionUser = { id: user.id, name: user.name, email: user.email };
 	if (rememberLogin) {
@@ -76,15 +103,15 @@ function renderAuthPage() {
 
 	const form = authMount.querySelector("[data-auth-form]");
 	const message = authMount.querySelector("[data-auth-message]");
-	form.addEventListener("submit", (event) => {
+	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		if (!form.checkValidity()) {
 			form.reportValidity();
 			return;
 		}
 		const result = isRegister
-			? registerUser(form.name.value, form.email.value, form.password.value, form.confirmPassword.value)
-			: loginUser(form.email.value, form.password.value, form.rememberLogin.checked);
+			? await registerUser(form.name.value, form.email.value, form.password.value, form.confirmPassword.value)
+			: await loginUser(form.email.value, form.password.value, form.rememberLogin.checked);
 		if (!result.success) {
 			message.textContent = result.message;
 			message.className = "form__hint alert--danger";

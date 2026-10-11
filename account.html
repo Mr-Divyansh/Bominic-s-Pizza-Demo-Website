@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Manage your Bominic's Pizza profile, orders, addresses and wishlist."><title>My Account | Bominic's Pizza</title><link rel="stylesheet" href="css/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Manage your Bominic's Pizza profile, orders, addresses and wishlist."><title>My Account | Bominic's Pizza</title>
+<link rel="canonical" href="https://restaurant-demo-two-indol.vercel.app/account.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bominic's Pizza">
+<meta property="og:title" content="My Account | Bominic's Pizza">
+<meta property="og:description" content="Manage your Bominic's Pizza profile, orders, addresses and wishlist.">
+<meta property="og:url" content="https://restaurant-demo-two-indol.vercel.app/account.html">
+<meta property="og:image" content="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=85">
+<meta name="twitter:card" content="summary_large_image"><link rel="stylesheet" href="css/style.css"></head>
 <body><div data-navbar></div><main data-account-page></main><div data-footer></div><script src="js/data.js"></script><script src="js/main.js"></script><script src="js/auth.js"></script><script>
 const ACCOUNT_ORDERS_KEY = "freshbiteOrders";
 const ACCOUNT_WISHLIST_KEY = "freshbiteWishlist";
@@ -47,7 +55,7 @@ function renderAddresses(addresses) {
 
 function renderWishlist(wishlist) {
 	if (wishlist.length === 0) return `<p class="form__hint">Your wishlist is empty. Save dishes you want to try.</p>`;
-	return wishlist.map((foodItem) => `<article class="food-card"><img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" loading="lazy"><div class="food-card__body"><h3>${escapeHtml(foodItem.name)}</h3><div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div><button class="button button--small" type="button" data-wishlist-add="${foodItem.id}">Add to Cart</button><button class="button button--ghost button--small" type="button" data-wishlist-remove="${foodItem.id}">Remove</button></div></div></div></article>`).join("");
+	return wishlist.map((foodItem) => `<article class="food-card"><img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" width="800" height="500" loading="lazy"><div class="food-card__body"><h3>${escapeHtml(foodItem.name)}</h3><div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><div><button class="button button--secondary button--small" type="button" data-wishlist-add="${foodItem.id}">Add to Cart</button><button class="button button--ghost button--small" type="button" data-wishlist-remove="${foodItem.id}">Remove</button></div></div></div></article>`).join("");
 }
 
 function renderOrders(orders) {
@@ -71,14 +79,17 @@ function attachAccountEvents(user, addressesKey) {
 		addresses.push({ id: `address-${Date.now()}`, label: form.label.value.trim(), address: form.address.value.trim(), city: form.city.value.trim(), pincode: form.pincode.value.trim() });
 		accountWrite(addressesKey, addresses);
 		renderAccountPage();
+		announceStatus("Address saved.");
 	});
 	document.querySelectorAll("[data-remove-address]").forEach((button) => button.addEventListener("click", () => {
 		accountWrite(addressesKey, accountRead(addressesKey, []).filter((address) => address.id !== button.dataset.removeAddress));
 		renderAccountPage();
+		announceStatus("Address removed.");
 	}));
 	document.querySelectorAll("[data-wishlist-remove]").forEach((button) => button.addEventListener("click", () => {
 		accountWrite(ACCOUNT_WISHLIST_KEY, accountRead(ACCOUNT_WISHLIST_KEY, []).filter((id) => id !== button.dataset.wishlistRemove));
 		renderAccountPage();
+		announceStatus("Dish removed from your wishlist.");
 	}));
 	document.querySelectorAll("[data-wishlist-add]").forEach((button) => button.addEventListener("click", () => {
 		addToCart(button.dataset.wishlistAdd);

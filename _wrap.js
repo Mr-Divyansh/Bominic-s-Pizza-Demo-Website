@@ -1,1 +1,0 @@
-﻿const{execSync}=require('child_process');const fs=require('fs');let out='';for(const s of ['_func.js','_audit.js','_shots.js']){try{out+=s+': '+execSync('node '+s,{encoding:'utf8',timeout:240000})+'\n';}catch(e){out+=s+' ERROR: '+e.message.slice(0,500)+'\n';}}fs.writeFileSync('_runlog.txt',out);console.log('written');

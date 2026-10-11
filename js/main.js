@@ -42,12 +42,20 @@ function isUserLoggedIn() {
 }
 
 function updateCartCount() {
+	const count = getCartItemCount();
 	document.querySelectorAll("[data-cart-count]").forEach((countElement) => {
-		const count = getCartItemCount();
 		countElement.textContent = count;
 		countElement.hidden = count === 0;
-		countElement.setAttribute("aria-label", `${count} cart item${count === 1 ? "" : "s"}`);
+		const cartLink = countElement.closest("a");
+		if (cartLink) cartLink.setAttribute("aria-label", count === 0 ? "View cart" : `View cart, ${count} item${count === 1 ? "" : "s"}`);
 	});
+}
+
+function announceStatus(message) {
+	const statusRegion = document.getElementById("site-status");
+	if (!statusRegion) return;
+	statusRegion.textContent = "";
+	window.setTimeout(() => { statusRegion.textContent = message; }, 60);
 }
 
 function renderNavbar() {
@@ -58,12 +66,14 @@ function renderNavbar() {
 		? '<a class="navbar__link" href="account.html">Account</a><button class="navbar__link navbar__logout" type="button" data-logout>Logout</button>'
 		: '<a class="navbar__link" href="login.html">Login</a>';
 
+	navbarMount.setAttribute("role", "banner");
 	navbarMount.innerHTML = `
+		<a class="skip-link" href="#main-content">Skip to main content</a>
+		<div id="site-status" class="sr-only" role="status"></div>
 		<nav class="navbar" aria-label="Primary navigation">
 			<div class="container navbar__inner">
-				<a class="navbar__brand" href="index.html" aria-label="Bominic's Pizza home">Bominic's<span> Pizza</span></a>
-				<button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="bominics-menu" data-menu-toggle>
-					<span aria-hidden="true">&#9776;</span><span class="sr-only">Open navigation menu</span>
+				<a class="navbar__brand" href="index.html" aria-label="Bominic's Pizza home">Bominic's Pizza</a>
+				<button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="bominics-menu" data-menu-toggle aria-label="Open navigation menu">
 				</button>
 				<div class="navbar__menu" id="bominics-menu" data-menu>
 					<a class="navbar__link" href="index.html">Home</a>
@@ -81,10 +91,15 @@ function renderNavbar() {
 
 	const menu = navbarMount.querySelector("[data-menu]");
 	const menuToggle = navbarMount.querySelector("[data-menu-toggle]");
+	const currentPage = window.location.pathname.split("/").pop() || "index.html";
+	navbarMount.querySelectorAll(".navbar__link").forEach((link) => {
+		const linkPage = (link.getAttribute("href") || "").split("?")[0];
+		if (linkPage === currentPage) link.setAttribute("aria-current", "page");
+	});
 	menuToggle.addEventListener("click", () => {
 		const isOpen = menu.classList.toggle("is-open");
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
-		menuToggle.querySelector(".sr-only").textContent = isOpen ? "Close navigation menu" : "Open navigation menu";
+		menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
 	});
 
 	navbarMount.querySelectorAll(".navbar__link").forEach((link) => {
@@ -113,6 +128,7 @@ function renderFooter() {
 	const footerMount = document.querySelector("[data-footer]");
 	if (!footerMount) return;
 
+	footerMount.setAttribute("role", "contentinfo");
 	footerMount.innerHTML = `
 		<footer class="footer">
 			<div class="container">
@@ -167,6 +183,9 @@ function addToCart(foodItemId) {
 	}
 	localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 	updateCartCount();
+	const addedItem = typeof foodItems !== "undefined" ? foodItems.find((foodItem) => foodItem.id === foodItemId) : null;
+	const itemCount = getCartItemCount();
+	announceStatus(`${addedItem ? addedItem.name : "Item"} added to cart. ${itemCount} item${itemCount === 1 ? "" : "s"} in cart.`);
 }
 
 function renderHomePage() {
@@ -191,11 +210,11 @@ function renderHomePage() {
 		const restaurant = restaurantLookup.get(foodItem.restaurantId);
 		return `
 			<article class="food-card">
-				<img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" loading="lazy">
+				<img class="food-card__image" src="${foodItem.image}" alt="${escapeHtml(foodItem.name)}" width="800" height="500" loading="lazy">
 				<div class="food-card__body">
 					<div class="food-card__meta"><span class="badge ${foodItem.dietaryType === "Vegan" ? "badge--success" : ""}">${escapeHtml(foodItem.dietaryType)}</span><span class="rating" aria-label="${foodItem.rating} out of 5 stars">★ ${foodItem.rating}</span></div>
 					<h3>${escapeHtml(foodItem.name)}</h3><p class="food-card__description">${restaurant ? escapeHtml(restaurant.name) : "Bominic's Pizza"}</p>
-					<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><button class="button button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div>
+					<div class="food-card__actions"><span class="food-card__price">₹${foodItem.price}</span><button class="button button--secondary button--small" type="button" data-add-to-cart="${foodItem.id}">Add to Cart</button></div>
 				</div>
 			</article>`;
 	}).join("");
@@ -207,9 +226,9 @@ function renderHomePage() {
 
 	homeMount.innerHTML = `
 		<section class="hero">
-			<div class="container hero__inner"><div class="hero__content"><span class="eyebrow">Bominic's Pizza · Palampur</span><h1>Hot, cheesy pizzas made fresh in Palampur.</h1><p>Explore the Bominic's demo menu, pick your favourite pizzas and sides, then check out in a few taps. Menu prices shown are samples.</p><div class="hero__actions"><a class="button" href="menu.html?restaurant=rest-003">Explore Bominic's Menu</a><a class="button button--secondary" href="contact.html">Visit or Call Us</a></div><p class="form__hint">Shop 7, HRTC Complex, Palampur · <a href="tel:+919988454540">+91 99884 54540</a></p></div><div class="hero__visual"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=85" alt="Freshly baked Bominic's pizza" fetchpriority="high"><span class="hero__note"><strong>Demo Menu</strong><small>Sample prices</small></span></div></div>
+			<div class="container hero__inner"><div class="hero__content"><span class="eyebrow">Bominic's Pizza · Palampur</span><h1>Hot, cheesy pizzas made fresh in Palampur.</h1><p>Explore the Bominic's demo menu, pick your favourite pizzas and sides, then check out in a few taps. Menu prices shown are samples.</p><div class="hero__actions"><a class="button" href="menu.html?restaurant=rest-003">Explore Bominic's Menu</a><a class="button button--secondary" href="contact.html">Visit or Call Us</a></div><p class="form__hint">Shop 7, HRTC Complex, Palampur · <a href="tel:+919988454540">+91 99884 54540</a></p></div><div class="hero__visual"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=85" alt="Freshly baked Bominic's pizza" width="1200" height="900" fetchpriority="high"><span class="hero__note"><strong>Demo Menu</strong><small>Sample prices</small></span></div></div>
 		</section>
-		<section class="section category-section" aria-labelledby="category-title"><div class="container"><div class="section__header"><div><span class="eyebrow">Choose your craving</span><h2 id="category-title">What are you in the mood for?</h2></div></div><div class="category-grid">${homeCategories.map(([name, icon, url]) => `<a class="category-card" href="${url}"><span class="category-card__icon" aria-hidden="true">${icon}</span><span>${name}</span></a>`).join("")}</div></div></section>
+		<section class="section category-section" aria-labelledby="category-title"><div class="container"><div class="section__header"><div><span class="eyebrow">Choose your craving</span><h2 id="category-title">What are you in the mood for?</h2></div></div><div class="category-grid">${homeCategories.map(([name, icon, url]) => `<a class="category-card" href="${url}" data-icon="${icon}" aria-label="${escapeHtml(name)}">${name}</a>`).join("")}</div></div></section>
 		<section class="section" id="featured-restaurants" aria-labelledby="dishes-title"><div class="container"><div class="section__header"><div><span class="eyebrow">Baked fresh</span><h2 id="dishes-title">Most-loved Bominic's pizzas</h2><p>Cheesy classics, veggie favourites and sides from the demo menu. Menu prices are samples.</p></div><a href="menu.html?restaurant=rest-003" class="button button--ghost button--small">Browse the menu</a></div><div class="food-grid">${dishCards}</div></div></section>
 		<section class="section offers-section" aria-labelledby="offers-title"><div class="container"><div class="section__header"><div><span class="eyebrow">A little extra joy</span><h2 id="offers-title">Special offers</h2><p class="form__hint">Demo offers for illustration only.</p></div></div><div class="offer-grid">${offerCards}</div></div></section>
 		<section class="section section--muted" aria-labelledby="why-title"><div class="container"><div class="section__header"><div><span class="eyebrow">The Bominic's promise</span><h2 id="why-title">Fresh from the oven, made for Palampur.</h2></div></div><div class="benefit-grid"><article><span class="benefit-icon">🍕</span><h3>Pizza-first menu</h3><p>Classic cheese, veggie and chicken pizzas with tasty sides.</p></article><article><span class="benefit-icon">🔥</span><h3>Baked fresh</h3><p>Hot, cheesy and ready to enjoy with family and friends.</p></article><article><span class="benefit-icon">🛵</span><h3>Easy ordering</h3><p>Search, filter and add pizzas to your cart in seconds.</p></article><article><span class="benefit-icon">📍</span><h3>Find us in Palampur</h3><p>Shop 7, HRTC Complex, Palampur. Call <a href="tel:+919988454540">+91 99884 54540</a>.</p></article></div></div></section>
@@ -224,6 +243,11 @@ function renderHomePage() {
 }
 
 function initializeFreshBite() {
+	const mainElement = document.querySelector("main");
+	if (mainElement) {
+		if (!mainElement.id) mainElement.id = "main-content";
+		mainElement.setAttribute("tabindex", "-1");
+	}
 	renderNavbar();
 	renderFooter();
 	renderHomePage();

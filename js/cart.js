@@ -37,12 +37,14 @@ function calculateCartTotals(lines) {
 function saveCart(lines) {
 	localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines.map((line) => ({ foodItemId: line.product.id, quantity: line.quantity }))));
 	updateCartCount();
+	const itemCount = getCartItemCount();
+	announceStatus(`Cart updated. ${itemCount} item${itemCount === 1 ? "" : "s"} in your cart.`);
 }
 
 function renderCartLine(line, restaurantLookup) {
 	const restaurant = restaurantLookup.get(line.product.restaurantId);
 	return `
-		<article class="card cart-line"><img class="card__image cart-line__image" src="${line.product.image}" alt="${escapeHtml(line.product.name)}" loading="lazy"><div class="card__body cart-line__body"><div><h2>${escapeHtml(line.product.name)}</h2><p>${restaurant ? escapeHtml(restaurant.name) : "Bominic's Pizza"}</p><span class="food-card__price">${formatCurrency(line.product.price)} each</span></div><div class="cart-line__controls"><label class="form__label" for="quantity-${line.product.id}">Quantity</label><div class="quantity-control"><button class="button button--secondary button--small" type="button" data-decrease="${line.product.id}" aria-label="Decrease ${escapeHtml(line.product.name)} quantity">−</button><input id="quantity-${line.product.id}" class="cart-quantity" type="number" min="1" max="20" value="${line.quantity}" data-quantity-input="${line.product.id}" aria-label="${escapeHtml(line.product.name)} quantity"><button class="button button--secondary button--small" type="button" data-increase="${line.product.id}" aria-label="Increase ${escapeHtml(line.product.name)} quantity">+</button></div><strong>${formatCurrency(line.product.price * line.quantity)}</strong><button class="button button--ghost button--small" type="button" data-remove="${line.product.id}">Remove</button></div></div></article>`;
+		<article class="card cart-line"><img class="card__image cart-line__image" src="${line.product.image}" alt="${escapeHtml(line.product.name)}" width="800" height="500" loading="lazy"><div class="card__body cart-line__body"><div><h2>${escapeHtml(line.product.name)}</h2><p>${restaurant ? escapeHtml(restaurant.name) : "Bominic's Pizza"}</p><span class="food-card__price">${formatCurrency(line.product.price)} each</span></div><div class="cart-line__controls"><label class="form__label" for="quantity-${line.product.id}">Quantity</label><div class="quantity-control"><button class="button button--secondary button--small" type="button" data-decrease="${line.product.id}" aria-label="Decrease ${escapeHtml(line.product.name)} quantity">−</button><input id="quantity-${line.product.id}" class="cart-quantity" type="number" min="1" max="20" value="${line.quantity}" data-quantity-input="${line.product.id}" aria-label="${escapeHtml(line.product.name)} quantity"><button class="button button--secondary button--small" type="button" data-increase="${line.product.id}" aria-label="Increase ${escapeHtml(line.product.name)} quantity">+</button></div><strong>${formatCurrency(line.product.price * line.quantity)}</strong><button class="button button--ghost button--small" type="button" data-remove="${line.product.id}">Remove</button></div></div></article>`;
 }
 
 function renderCartSummary(totals) {
@@ -124,6 +126,7 @@ function attachCartEvents() {
 		localStorage.removeItem(CART_STORAGE_KEY);
 		appliedCoupon = null;
 		updateCartCount();
+		announceStatus("Your cart has been cleared.");
 		refreshCartPage();
 	});
 	document.querySelector("[data-coupon-form]").addEventListener("submit", (event) => { event.preventDefault(); applyCoupon(); });
