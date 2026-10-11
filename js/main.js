@@ -73,9 +73,13 @@ function renderNavbar() {
 				<a class="navbar__link" href="about.html">About</a>
 				<a class="navbar__link" href="contact.html">Contact</a>`;
 
+	const cartLink = '<a class="navbar__link navbar__cart" href="cart.html" aria-label="View cart">Cart <span class="badge" data-cart-count hidden>0</span></a>';
+
+	/* The account block is rendered once and *moved* into the drawer on mobile,
+	   so a duplicate Login/Cart never appears outside the drawer. */
 	const accountLinks = `<div class="navbar__actions">
 				${accountEntry}
-				<a class="navbar__link navbar__cart" href="cart.html" aria-label="View cart">Cart <span class="badge" data-cart-count hidden>0</span></a>
+				${cartLink}
 			</div>`;
 
 	navbarMount.setAttribute("role", "banner");
@@ -100,9 +104,8 @@ function renderNavbar() {
 			</div>
 			<nav class="navbar__drawer__group" aria-label="Pages">${primaryLinks}
 			</nav>
-			<div class="navbar__drawer__group" aria-label="Your account">
+			<div class="navbar__drawer__group" aria-label="Your account" data-drawer-account>
 				<span class="navbar__drawer__group-label" aria-hidden="true">Your account</span>
-				${accountLinks}
 			</div>
 		</div>`;
 
@@ -110,11 +113,26 @@ function renderNavbar() {
 	const scrim = navbarMount.querySelector("[data-drawer-scrim]");
 	const drawerCloseButton = navbarMount.querySelector("[data-drawer-close]");
 	const menuToggle = navbarMount.querySelector("[data-menu-toggle]");
+	const accountBlock = navbarMount.querySelector(".navbar__actions");
+	const navbarInner = navbarMount.querySelector(".navbar__inner");
+	const drawerAccountGroup = drawer.querySelector("[data-drawer-account]");
 	const currentPage = window.location.pathname.split("/").pop() || "index.html";
 	navbarMount.querySelectorAll(".navbar__link").forEach((link) => {
 		const linkPage = (link.getAttribute("href") || "").split("?")[0];
 		if (linkPage === currentPage) link.setAttribute("aria-current", "page");
 	});
+
+	/* Below 64rem the single account block lives inside the drawer; at desktop it
+	   returns to the navbar. A duplicate Login/Cart never exists at any width. */
+	function syncAccountPlacement() {
+		const isMobile = window.matchMedia("(max-width: 63.99rem)").matches;
+		const inDrawer = accountBlock.parentElement === drawerAccountGroup;
+		if (isMobile && !inDrawer) drawerAccountGroup.appendChild(accountBlock);
+		else if (!isMobile && inDrawer) navbarInner.appendChild(accountBlock);
+	}
+
+	syncAccountPlacement();
+	window.addEventListener("resize", syncAccountPlacement);
 
 	function isDrawerOpen() {
 		return drawer.classList.contains("is-open");
@@ -129,12 +147,14 @@ function renderNavbar() {
 		menuToggle.setAttribute("aria-label", shouldOpen ? "Close navigation menu" : "Open navigation menu");
 		document.body.classList.toggle("navbar-drawer-open", shouldOpen);
 		if (shouldOpen) {
-			/* Flush pending style changes first: the drawer starts life with
-			   visibility: hidden, and calling focus() before the visibility
-			   transition has been applied would silently do nothing. */
-			void drawer.offsetHeight;
-			const initialFocus = drawer.querySelector("[data-drawer-close]") || drawer;
-			if (typeof initialFocus.focus === "function") initialFocus.focus({ preventScroll: true });
+			/* The closed drawer carries `visibility: hidden`, so focus() is a
+			   no-op until the browser has recalculated style for the open state.
+			   Wait one frame before moving focus in. */
+			window.requestAnimationFrame(() => {
+				if (!isDrawerOpen()) return;
+				const initialFocus = drawer.querySelector("[data-drawer-close]") || drawer;
+				if (typeof initialFocus.focus === "function") initialFocus.focus({ preventScroll: true });
+			});
 		} else {
 			menuToggle.focus();
 		}

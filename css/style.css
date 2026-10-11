@@ -374,6 +374,7 @@ button.button--ghost:hover { color: var(--color-dark); background: var(--color-p
 .navbar__link:hover { color: var(--color-primary-dark); }
 .navbar__link[aria-current="page"] { color: var(--color-primary-dark); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
 .navbar__logout { border: 0; padding-inline: 0; background: transparent; }
+/* Hidden on mobile: the whole block is moved into the drawer by main.js. */
 .navbar__actions { order: 2; display: none; align-items: center; gap: var(--space-4); margin-left: auto; }
 .navbar__cart { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; min-width: 2.75rem; padding-inline: 0.5rem; white-space: nowrap; }
 .navbar__drawer .navbar__actions { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-2); margin-left: 0; }
@@ -604,10 +605,11 @@ input[type="radio"] {
 .filter-pills input:not([type="checkbox"]):not([type="radio"]) { width: auto; min-height: auto; }
 
 /* Remember me row: checkbox and label share one line, vertically centred,
-   with a 44px tap target that does not visually enlarge the control. */
+   with a 44px tap target that does not visually enlarge the control.
+   !important guards against a competing block-level label rule. */
 .form__checkbox {
-	display: inline-flex;
-	align-items: center;
+	display: flex !important;
+	align-items: center !important;
 	gap: var(--space-2);
 	min-height: 2.75rem;
 	padding-block: 0.25rem;
@@ -618,6 +620,7 @@ input[type="radio"] {
 
 .form__checkbox input[type="checkbox"] {
 	flex: 0 0 auto;
+	align-self: center;
 	margin: 0;
 	cursor: pointer;
 }
