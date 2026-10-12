@@ -361,6 +361,11 @@ button.button--ghost:hover { color: var(--color-dark); background: var(--color-p
 
 .navbar__drawer__group + .navbar__drawer__group { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--color-border); }
 
+/* Account group (Login/Cart) pins to the very bottom of the drawer; the
+   nav links stay at the top. Auto margin collapses if content overflows,
+   so everything remains visible on small screens. */
+.navbar__drawer__group[data-drawer-account] { margin-top: auto; flex: 0 0 auto; }
+
 .navbar__drawer__group-label {
 	display: block;
 	margin-bottom: var(--space-2);
@@ -520,8 +525,17 @@ main[tabindex="-1"]:focus { outline: none; }
 .cart-lines { display: grid; gap: var(--space-4); }
 .cart-line { display: grid; grid-template-columns: minmax(0, 7rem) minmax(0, 1fr); min-width: 0; }
 .cart-line__image { height: 100%; min-height: 7rem; object-fit: cover; }
-.cart-line__body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); min-width: 0; }
+.cart-line__body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); min-width: 0; }
+.cart-line__info { flex: 1 1 auto; min-width: 0; }
+.cart-line__info h2 { margin-bottom: var(--space-1); font-size: var(--text-lg); }
+.cart-line__info p { margin-bottom: var(--space-1); font-size: var(--text-xs); }
+.cart-line__info .food-card__price { font-size: var(--text-base); }
 .cart-line__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-width: 0; }
+/* Minus / quantity / plus share one compact horizontal row. */
+.cart-line .quantity-control { display: inline-flex; flex-direction: row; align-items: center; gap: var(--space-2); }
+/* Item total + Remove sit together on a dedicated bottom row. */
+.cart-line__footer { display: flex; flex: 1 0 100%; align-items: center; justify-content: space-between; gap: var(--space-3); min-width: 0; }
+.cart-line__total { font-size: var(--text-base); white-space: nowrap; }
 .cart-quantity { width: 4rem; min-height: 2.75rem; text-align: center; }
 .quantity-control { display: grid; gap: var(--space-2); }
 .quantity-control > div { display: flex; align-items: center; gap: var(--space-2); }
@@ -764,8 +778,10 @@ textarea:focus-visible { outline: 3px solid var(--color-accent); outline-offset:
 	.food-card__actions { flex-direction: column; align-items: stretch; }
 	.food-card__buttons { display: grid; grid-template-columns: 1fr; width: 100%; }
 	.food-card__buttons .button { width: 100%; text-align: center; white-space: normal; }
-	.cart-line__body { grid-template-columns: 1fr; }
-	.cart-line__image { width: 100%; height: 11rem; }
+	.cart-line { grid-template-columns: minmax(0, 5rem) minmax(0, 1fr); }
+	.cart-line__image { width: 100%; height: 100%; min-height: 7.5rem; }
+	.cart-line__body { padding: var(--space-4); }
+	.cart-line .cart-quantity { width: 2.75rem; }
 	.coupon-form__row { grid-template-columns: 1fr; }
 	.footer__grid { grid-template-columns: minmax(0, 1fr); }
 	.navbar__menu { display: none; }
