@@ -234,5 +234,7 @@ const reviews = [
 	{ id: "review-004", restaurantId: "rest-004", foodItemId: "food-010", customerName: "Meera Iyer", rating: 5, comment: "Juicy smash patties and perfectly crisp fries. Great comfort food.", date: "2026-08-10", verifiedOrder: true },
 	{ id: "review-005", restaurantId: "rest-005", foodItemId: "food-015", customerName: "Rohan Das", rating: 4, comment: "The ramen broth was deeply savoury and the vegetables were fresh.", date: "2026-08-07", verifiedOrder: true },
 	{ id: "review-006", restaurantId: "rest-006", foodItemId: "food-016", customerName: "Ananya Pillai", rating: 5, comment: "Crisp dosa, generous masala, and the chutney had just the right heat.", date: "2026-08-05", verifiedOrder: true },
-	{ id: "review-007", restaurantId: "rest-008", foodItemId: "food-022", customerName: "Vikram Singh", rating: 5, comment: "The cake was moist, glossy, and not overly sweet. Will order again.", date: "2026-08-02", verifiedOrder: true }
+	{ id: "review-007", restaurantId: "rest-008", foodItemId: "food-022", customerName: "Vikram Singh", rating: 5, comment: "The cake was moist, glossy, and not overly sweet. Will order again.", date: "2026-08-02", verifiedOrder: true },
+	{ id: "review-008", restaurantId: "rest-003", foodItemId: "food-026", customerName: "Simran Kaur", rating: 5, comment: "The cheese burst was molten and the crust had a perfect chew. Delivered hot in under 30 minutes.", date: "2026-08-15", verifiedOrder: true },
+	{ id: "review-009", restaurantId: "rest-003", foodItemId: "food-028", customerName: "Arjun Mehta", rating: 5, comment: "Paneer tikka pizza was loaded with toppings and the smoky flavour came through in every bite.", date: "2026-08-14", verifiedOrder: true }
 ];

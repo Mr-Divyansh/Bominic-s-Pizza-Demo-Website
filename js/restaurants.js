@@ -1,12 +1,25 @@
+function formatRestaurantPrice(restaurant) {
+	const menuItems = typeof foodItems !== "undefined" ? foodItems.filter((item) => item.restaurantId === restaurant.id) : [];
+	if (menuItems.length) {
+		const averagePrice = Math.round(menuItems.reduce((sum, item) => sum + item.price, 0) / menuItems.length);
+		const priceForTwo = Math.round((averagePrice * 2) / 50) * 50;
+		return `₹${priceForTwo} for two`;
+	}
+	const fallbackPrices = { "$": "₹400 for two", "$$": "₹700 for two", "$$$": "₹1200 for two" };
+	return fallbackPrices[restaurant.priceRange] || "₹700 for two";
+}
+
 function renderRestaurantCard(restaurant) {
+	const priceLabel = formatRestaurantPrice(restaurant);
+	const priceBadge = restaurant.priceRange.replace(/\$/g, "₹");
 	return `
 		<article class="restaurant-card">
 			<img class="restaurant-card__image" src="${restaurant.image}" alt="${escapeHtml(restaurant.name)} cuisine" width="800" height="500" loading="lazy">
 			<div class="restaurant-card__body">
-				<div class="restaurant-card__meta"><span class="badge ${restaurant.featured ? "badge--accent" : ""}">${restaurant.featured ? "Featured" : escapeHtml(restaurant.priceRange)}</span><span class="rating" aria-label="${restaurant.rating} out of 5 stars">★ ${restaurant.rating}</span></div>
+				<div class="restaurant-card__meta"><span class="badge ${restaurant.featured ? "badge--accent" : ""}">${restaurant.featured ? "Featured" : priceBadge}</span><span class="rating" aria-label="${restaurant.rating} out of 5 stars">★ ${restaurant.rating}</span></div>
 				<h2>${escapeHtml(restaurant.name)}</h2>
 				<p class="restaurant-card__description">${escapeHtml(restaurant.cuisine)}</p>
-				<div class="restaurant-card__meta"><span>${escapeHtml(restaurant.priceRange)} · ${escapeHtml(restaurant.deliveryTime)}</span><span>${escapeHtml(restaurant.location)}</span></div>
+				<div class="restaurant-card__meta"><span>${priceLabel} · ${escapeHtml(restaurant.deliveryTime)}</span><span>${escapeHtml(restaurant.location)}</span></div>
 				<a class="button button--secondary button--small" href="menu.html?restaurant=${encodeURIComponent(restaurant.id)}">View Menu</a>
 			</div>
 		</article>`;
@@ -75,7 +88,7 @@ function initializeRestaurantPage() {
 					<div class="restaurant-filter-grid">
 						<div class="form__group"><label class="form__label" for="cuisine-filter">Cuisine</label><select class="select" id="cuisine-filter" data-cuisine-filter><option value="">All cuisines</option>${cuisines.map((cuisine) => `<option value="${escapeHtml(cuisine)}">${escapeHtml(cuisine)}</option>`).join("")}</select></div>
 						<div class="form__group"><label class="form__label" for="rating-filter">Minimum rating</label><select class="select" id="rating-filter" data-rating-filter><option value="">Any rating</option><option value="4">4.0+ stars</option><option value="4.5">4.5+ stars</option><option value="4.8">4.8+ stars</option></select></div>
-						<div class="form__group"><label class="form__label" for="price-filter">Price range</label><select class="select" id="price-filter" data-price-filter><option value="">Any price</option><option value="$">$ · Budget</option><option value="$$">$$ · Mid-range</option><option value="$$$">$$$ · Premium</option></select></div>
+						<div class="form__group"><label class="form__label" for="price-filter">Price range</label><select class="select" id="price-filter" data-price-filter><option value="">Any price</option><option value="$">₹ · Budget</option><option value="$$">₹₹ · Mid-range</option><option value="$$$">₹₹₹ · Premium</option></select></div>
 						<div class="form__group"><label class="form__label" for="sort-filter">Sort by</label><select class="select" id="sort-filter" data-sort-filter><option value="name-asc">Name A-Z</option><option value="rating-desc">Top rated</option><option value="delivery-asc">Fastest delivery</option></select></div>
 					</div>
 					<div class="restaurant-filter-actions"><button class="button button--secondary button--small" type="button" data-clear-filters>Clear filters</button><span class="form__hint" data-result-count aria-live="polite">Loading restaurants...</span></div>
